@@ -51,6 +51,29 @@ describe('gulp-mustache', function () {
         stream.end();
     });
 
+    it('should produce correct html output when rendering a file (overridden tags)', function (done) {
+
+        var expectedFile = makeExpectedFile('test/expected/output.html');
+        var srcFile = makeFixtureFile('test/fixtures/ok.mustache');
+        var stream = mustache({ title: 'gulp-mustache' }, null, null, ['{{{', '}}}']);
+
+        stream.on('error', function (err) {
+            should.exist(err);
+            done(err);
+        });
+
+        stream.on('data', function (newFile) {
+
+            should.exist(newFile);
+            should.exist(newFile.contents);
+            String(newFile.contents).should.equal(String(expectedFile.contents));
+            done();
+        });
+
+        stream.write(srcFile);
+        stream.end();
+    });
+
     it('should produce correct html output when rendering included partials', function (done) {
 
         var expectedFile = makeExpectedFile('test/expected/outputWithPartial.html');

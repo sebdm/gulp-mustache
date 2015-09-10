@@ -6,7 +6,7 @@ var mustache = require('mustache');
 var fs = require('fs');
 var path = require('path');
 
-module.exports = function (view, options, partials) {
+module.exports = function (view, options, partials, tags) {
     options = options || {};
     partials = partials || {};
 
@@ -51,11 +51,17 @@ module.exports = function (view, options, partials) {
             );
         }
 
+        var standardTags = mustache.tags;
+        if (tags) {
+            mustache.tags = tags;
+        }
+
         file.contents = new Buffer(mustache.render(template, file.data || view, partials));
         if (typeof options.extension === 'string') {
             file.path = gutil.replaceExtension(file.path, options.extension);
         }
         this.push(file);
+        mustache.tags = standardTags;
         cb();
     });
 
